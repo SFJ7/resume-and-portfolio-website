@@ -31,6 +31,7 @@
             display: block;
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            touch-action: none; /* let JS handle vertical drags instead of scrolling */
         }
         #controls {
             margin-top: 20px;
@@ -265,8 +266,19 @@
         }
 
         function movePlayerPaddle(event) {
+            // Support both mouse and touch input
+            let clientY;
+            if (event.touches && event.touches.length) {
+                event.preventDefault(); // stop the page from scrolling while dragging
+                clientY = event.touches[0].clientY;
+            } else {
+                clientY = event.clientY;
+            }
+
             let rect = canvas.getBoundingClientRect();
-            player.y = event.clientY - rect.top - player.height / 2;
+            // Account for any CSS scaling between display size and canvas resolution
+            let scaleY = canvas.height / rect.height;
+            player.y = (clientY - rect.top) * scaleY - player.height / 2;
 
             // Keep paddle within canvas bounds
             if (player.y < 0) {
@@ -385,6 +397,8 @@
 
         // Event listeners
         canvas.addEventListener('mousemove', movePlayerPaddle);
+        canvas.addEventListener('touchstart', movePlayerPaddle, { passive: false });
+        canvas.addEventListener('touchmove', movePlayerPaddle, { passive: false });
         startButton.addEventListener('click', startGame);
         window.addEventListener('resize', () => {
             resizeCanvas();

@@ -194,10 +194,10 @@ a { color: inherit; }
   transition: transform 0.35s var(--ease), opacity 0.25s var(--ease);
 }
 .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(1) {
-  transform: translateY(6.5px) rotate(45deg);
+  transform: translateY(3.25px) rotate(45deg);
 }
 .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(2) {
-  transform: translateY(-6.5px) rotate(-45deg);
+  transform: translateY(-3.25px) rotate(-45deg);
 }
 
 /* Mobile sheet */
@@ -617,6 +617,10 @@ a { color: inherit; }
 @media (max-width: 880px) {
   .nav__links { display: none; }
   .nav__toggle { display: flex; }
+
+  /* Give the hero statement room above the fixed scroll cue on mobile */
+  .hero__content { padding-bottom: clamp(7rem, 22vh, 11rem); }
+  .hero__cue { bottom: 1.25rem; }
 
   .work, .work--reverse {
     grid-template-columns: 1fr;

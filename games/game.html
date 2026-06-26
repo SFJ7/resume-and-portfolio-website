@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Endless Runner</title>
     <style>
-        * { margin: 0; padding: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #222;
             display: flex;
@@ -13,10 +13,15 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            padding: 12px;
         }
         canvas {
             border: 2px solid #444;
             image-rendering: pixelated;
+            /* Scale the display to fit small screens; internal resolution stays 800x400 */
+            max-width: 100%;
+            height: auto;
+            touch-action: manipulation;
         }
     </style>
 </head>
@@ -89,31 +94,46 @@
             obstacles = [];
         }
 
-        // Input
+        // Detect touch devices to adapt input and on-screen instructions
+        const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+        // Shared action: start / jump / restart depending on game state.
+        // Triggered by the space bar (desktop) and by a tap (mobile).
+        function handleTap() {
+            if (gameState === 'start') {
+                gameState = 'playing';
+                resetGame();
+                if (!musicStarted) {
+                    bgMusic.play();
+                    musicStarted = true;
+                }
+            } else if (gameState === 'playing') {
+                if (player.jumpCount < 2) {
+                    player.vy = player.jumpCount === 0 ? JUMP_FORCE : DOUBLE_JUMP_FORCE;
+                    player.jumpCount++;
+                    player.grounded = false;
+                }
+            } else if (gameState === 'gameover') {
+                gameState = 'playing';
+                resetGame();
+                bgMusic.currentTime = 0;
+                bgMusic.play();
+            }
+        }
+
+        // Input — keyboard (desktop)
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
-                if (gameState === 'start') {
-                    gameState = 'playing';
-                    resetGame();
-                    if (!musicStarted) {
-                        bgMusic.play();
-                        musicStarted = true;
-                    }
-                } else if (gameState === 'playing') {
-                    if (player.jumpCount < 2) {
-                        player.vy = player.jumpCount === 0 ? JUMP_FORCE : DOUBLE_JUMP_FORCE;
-                        player.jumpCount++;
-                        player.grounded = false;
-                    }
-                } else if (gameState === 'gameover') {
-                    gameState = 'playing';
-                    resetGame();
-                    bgMusic.currentTime = 0;
-                    bgMusic.play();
-                }
+                handleTap();
             }
         });
+
+        // Input — touch (mobile). preventDefault avoids the synthesized click + scroll.
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleTap();
+        }, { passive: false });
 
         function spawnObstacle() {
             // 50% ground, 50% air
@@ -334,9 +354,13 @@
                 ctx.fillStyle = '#fff';
                 ctx.font = 'bold 36px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText('Press Space Bar to Start', canvas.width / 2, canvas.height / 2);
+                ctx.fillText(isTouch ? 'Tap to Start' : 'Press Space Bar to Start', canvas.width / 2, canvas.height / 2);
                 ctx.font = '18px monospace';
-                ctx.fillText('Press spacebar once to jump or press it a second time to double jump!', canvas.width / 2, canvas.height / 2 + 40);
+                ctx.fillText(
+                    isTouch
+                        ? 'Tap once to jump, tap again to double jump!'
+                        : 'Press spacebar once to jump or press it a second time to double jump!',
+                    canvas.width / 2, canvas.height / 2 + 40);
                 ctx.textAlign = 'left';
                 return;
             }
@@ -371,7 +395,7 @@
                 ctx.fillText('Items Avoided: ' + score, canvas.width / 2, canvas.height / 2 + 10);
 
                 ctx.font = 'bold 20px monospace';
-                ctx.fillText('Try Again? (Press Spacebar!)', canvas.width / 2, canvas.height / 2 + 50);
+                ctx.fillText(isTouch ? 'Try Again? (Tap!)' : 'Try Again? (Press Spacebar!)', canvas.width / 2, canvas.height / 2 + 50);
                 ctx.textAlign = 'left';
             }
         }
