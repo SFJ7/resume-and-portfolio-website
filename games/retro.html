@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pong Game</title>
+    <title>Retro Game</title>
     <style>
         body {
             display: flex;
@@ -81,7 +81,7 @@
 </head>
 <body>
     <div id="gameContainer">
-        <canvas id="pongCanvas"></canvas>
+        <canvas id="retroCanvas"></canvas>
         <div id="controls">
             <button id="startButton">Start Game</button>
             <div id="score">Player: 0 - AI: 0</div>
@@ -90,7 +90,7 @@
     <div id="messageBox">Game Over!</div>
 
     <script>
-        const canvas = document.getElementById('pongCanvas');
+        const canvas = document.getElementById('retroCanvas');
         const context = canvas.getContext('2d');
         const startButton = document.getElementById('startButton');
         const scoreDisplay = document.getElementById('score');
@@ -146,7 +146,7 @@
                 newHeight = Math.min(maxHeight, windowHeight);
                 newWidth = newHeight * (maxWidth / maxHeight);
             }
-            
+
             canvas.width = newWidth;
             canvas.height = newHeight;
 
@@ -203,7 +203,7 @@
         function resetBall(direction) { // direction is 1 for player, -1 for AI
             ball.x = canvas.width / 2;
             ball.y = canvas.height / 2;
-            
+
             // Ensure consistent speed magnitude, vary angle slightly
             let angle = Math.random() * Math.PI / 4 - Math.PI / 8; // -22.5 to 22.5 degrees
             ball.dx = direction * 5 * Math.cos(angle);
@@ -225,12 +225,12 @@
             if (ball.x - ball.radius < player.x + player.width &&
                 ball.y > player.y && ball.y < player.y + player.height &&
                 ball.dx < 0) { // Check if ball is moving towards player
-                
+
                 // Calculate hit position on paddle (-1 to 1)
                 let collidePoint = (ball.y - (player.y + player.height / 2)) / (player.height / 2);
                 // Angle of reflection (max 45 degrees)
                 let angleRad = (Math.PI / 4) * collidePoint;
-                
+
                 // Change ball direction
                 ball.dx = 5 * Math.cos(angleRad); // Speed magnitude 5
                 ball.dy = 5 * Math.sin(angleRad);
@@ -241,7 +241,7 @@
             if (ball.x + ball.radius > ai.x &&
                 ball.y > ai.y && ball.y < ai.y + ai.height &&
                 ball.dx > 0) { // Check if ball is moving towards AI
-                
+
                 let collidePoint = (ball.y - (ai.y + ai.height / 2)) / (ai.height / 2);
                 let angleRad = (Math.PI / 4) * collidePoint;
 
@@ -291,7 +291,7 @@
         function moveAiPaddle() {
             // Simple AI: tries to center its paddle on the ball's y position
             const paddleCenter = ai.y + ai.height / 2;
-            
+
             if (paddleCenter < ball.y - 20) { // Ball is significantly below paddle center
                 ai.y += ai.speed;
             } else if (paddleCenter > ball.y + 20) { // Ball is significantly above paddle center
@@ -355,7 +355,7 @@
             startButton.style.backgroundColor = '#ffc107'; // Yellow for play again
             startButton.style.color = '#000';
         }
-        
+
         function startGame() {
             if (gameRunning && (player.score >= WINNING_SCORE || ai.score >= WINNING_SCORE)) {
                 // If game was over, reset scores for "Play Again"
@@ -380,10 +380,10 @@
                  ai.score = 0;
                  updateScore();
             }
-            
+
             resizeCanvas(); // Ensure canvas is sized correctly before starting
             resetBall(Math.random() < 0.5 ? 1 : -1); // Random initial direction
-            
+
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }
@@ -412,7 +412,7 @@
         drawGame(); // Draw initial state (paddles, net)
         updateScore(); // Initialize score display
 
-        console.log("Pong game initialized. Press Start Game to play!");
+        console.log("Retro game initialized. Press Start Game to play!");
     </script>
 </body>
 </html>
