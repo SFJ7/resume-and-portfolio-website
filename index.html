@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stephen Jackson — Senior Technical Program Manager</title>
+  <meta name="description"
+    content="Stephen Jackson — Senior Technical Program Manager. Twelve years turning complex distributed systems into calm, reliable outcomes." />
+
+  <!-- ============================================================
+       FONTS — Google Fonts: Fraunces (display) + Newsreader (text)
+       ============================================================ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+  <!-- Faint paper grain overlay (decorative, non-interactive) -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Skip link for keyboard users -->
+  <a class="skip-link" href="#hero">Skip to content</a>
+
+  <!-- ============================================================
+       GLOBAL NAV — transparent over hero, solid paper after scroll
+       ============================================================ -->
+  <header class="nav" id="nav" data-state="top">
+    <div class="nav__inner">
+      <a class="nav__mark" href="#hero" aria-label="Stephen Jackson — home">
+        <span class="nav__mark-full">Stephen Jackson</span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#work" class="nav__link">Work</a>
+        <a href="#experience" class="nav__link">Experience</a>
+        <a href="#portfolio" class="nav__link">Portfolio</a>
+        <a href="#contact" class="nav__link">Contact</a>
+      </nav>
+
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="mobileSheet"
+        aria-label="Open menu">
+        <span class="nav__toggle-bar"></span>
+        <span class="nav__toggle-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu sheet -->
+  <div class="sheet" id="mobileSheet" aria-hidden="true">
+    <nav class="sheet__nav" aria-label="Mobile">
+      <a href="#work" class="sheet__link">Work</a>
+      <a href="#experience" class="sheet__link">Experience</a>
+      <a href="#portfolio" class="sheet__link">Portfolio</a>
+      <a href="#contact" class="sheet__link">Contact</a>
+    </nav>
+  </div>
+
+  <main id="main">
+
+    <!-- ============================================================
+         SECTION 1 — HERO (full viewport, looping muted video)
+         ASSET: assets/hero.mp4 + assets/hero-poster.jpg
+         ============================================================ -->
+    <section class="hero" id="hero">
+      <div class="hero__media">
+        <!-- PLACEHOLDER MEDIA: replace assets/hero.mp4 + assets/hero-poster.jpg -->
+        <video class="hero__video" autoplay muted loop playsinline preload="metadata" poster="assets/hero-poster.jpg">
+          <source src="assets/hero.mp4" type="video/mp4" />
+        </video>
+        <!-- Warm paper-toned scrim (not a black gradient) -->
+        <div class="hero__scrim" aria-hidden="true"></div>
+      </div>
+
+      <div class="hero__content">
+        <h1 class="hero__name">Stephen Jackson</h1>
+        <p class="hero__role">Senior Technical Program Manager</p>
+        <!-- EDITABLE: positioning statement -->
+        <p class="hero__statement">
+          Twelve years turning complex distributed systems into calm, reliable
+          outcomes — across cloud migrations, observability, and AI-enabled delivery.
+        </p>
+      </div>
+
+      <a class="hero__cue" href="#work" aria-label="Scroll to content">
+        <span class="hero__cue-label">Scroll</span>
+        <span class="hero__cue-line" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <!-- ============================================================
+         SECTION 2 — AMBIENT SCROLL-SCRUB STATEMENT (pinned)
+         ASSET: assets/ambient.mp4 + assets/ambient-poster.jpg
+         ============================================================ -->
+    <section class="scrub" id="work" aria-label="Statement">
+      <div class="scrub__pin" id="scrubPin">
+        <!-- Pinned background. Currently the solar-system still (assets/ambient-poster.jpg).
+             To enable scroll-scrubbing later, add a <source src="assets/ambient.mp4"> below
+             and the script will seek it from scroll progress automatically. -->
+        <video class="scrub__video" id="scrubVideo" muted playsinline preload="auto" poster="assets/ambient-poster.jpg">
+          <source src="assets/ambient.mp4" type="video/mp4" />
+        </video>
+        <div class="scrub__scrim" aria-hidden="true"></div>
+
+        <div class="scrub__lines">
+          <p class="scrub__line" data-line="0">Reliability isn't an accident.</p>
+          <p class="scrub__line" data-line="1">It's the product of clarity, coordination, and calm under pressure.</p>
+          <p class="scrub__line" data-line="2">That's the work.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transition line into Experience -->
+    <div class="transition">
+      <p class="transition__line">Here's where that's played out.</p>
+    </div>
+
+    <!-- ============================================================
+         SECTION 3 — EXPERIENCE (editorial timeline)
+         ============================================================ -->
+    <section class="experience" id="experience">
+      <div class="container">
+        <header class="section-head reveal">
+          <span class="section-num">02</span>
+          <h2 class="section-title">Experience</h2>
+          <p class="section-intro">
+            A track record across telecom, travel, and logistics — from hands-on
+            engineering to cross-org program leadership.
+          </p>
+        </header>
+
+        <ol class="timeline">
+
+          <li class="entry reveal">
+            <div class="entry__marker" aria-hidden="true"><span class="entry__node"></span></div>
+            <div class="entry__body">
+              <span class="entry__num">01</span>
+              <p class="entry__dates">Nov 2025 – Jun 2026</p>
+              <h3 class="entry__company">T-Mobile</h3>
+              <p class="entry__role">Senior Product Owner</p>
+              <ul class="entry__points">
+                <li>Owned backend and API programs for customer data rights and privacy compliance (DSARs, data
+                  deletion) across T-Mobile's global privacy data systems.</li>
+                <li>Coordinated a home Scrum team of 8 plus up to 6 partner PODs across upstream / downstream
+                  dependencies.</li>
+                <li>Translated privacy regulations and legal requirements into technical specs, API contracts, and
+                  acceptance criteria.</li>
+                <li>Drove AI / automation enablement: an approved Claude Code + Jira agentic workflow for Capex/Opex
+                  reporting (projected to save 1–5 days/month), a Microsoft Copilot weekly-reporting automation (~90%
+                  less manual effort), and org-wide AI enablement training across all roles.</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="entry reveal">
+            <div class="entry__marker" aria-hidden="true"><span class="entry__node"></span></div>
+            <div class="entry__body">
+              <span class="entry__num">02</span>
+              <p class="entry__dates">Oct 2020 – Jul 2025</p>
+              <h3 class="entry__company">Expedia Group</h3>
+              <p class="entry__role">Program Manager III / Technical Product Manager II</p>
+              <ul class="entry__points">
+                <li>Owned cross-org technical programs on the Expedia flights search platform, coordinating 20+ global
+                  teams across 8 time zones.</li>
+                <li>Observability &amp; anomaly detection: drove P1 incidents to zero and P2s down 90%+, cutting
+                  MTTD/MTTK/MTTR — avoiding $600K+ in annual revenue loss and eliminating $1M+ in annual incident costs.
+                </li>
+                <li>In-memory database migration to Redis: led decommissioning of a legacy store, authored the
+                  escalation / war-room playbook, and ran follow-the-sun coverage to prevent T0 incidents.</li>
+                <li>Search performance migration: improved search response time by up to 50% and cut annual cloud costs
+                  by 45%, integrating ML features with the ML platform team.</li>
+                <li>Owned product and technical strategy for an app serving tens of millions of customers, running 10+
+                  concurrent initiatives per quarter.</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="entry reveal">
+            <div class="entry__marker" aria-hidden="true"><span class="entry__node"></span></div>
+            <div class="entry__body">
+              <span class="entry__num">03</span>
+              <p class="entry__dates">May 2019 – Aug 2019</p>
+              <h3 class="entry__company">inWhatLanguage</h3>
+              <p class="entry__role">Product Manager</p>
+              <ul class="entry__points">
+                <li>Directed strategy for the launch of a new B2B translation product, steering the company to its first
+                  pre-launch, business-level sale.</li>
+                <li>Owned the first-release feature roadmap and ran client interviews that surfaced onboarding
+                  improvements delivered to executives.</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="entry reveal">
+            <div class="entry__marker" aria-hidden="true"><span class="entry__node"></span></div>
+            <div class="entry__body">
+              <span class="entry__num">04</span>
+              <p class="entry__dates">Dec 2011 – Jul 2018</p>
+              <h3 class="entry__company">Expeditors</h3>
+              <p class="entry__role">Software Engineer (QA, Java, UI)</p>
+              <ul class="entry__points">
+                <li>Built and tested full-stack features for an enterprise accounting system — backend in Java, Spring,
+                  and SQL; front-end in AngularJS and Bootstrap.</li>
+                <li>Authored automated and manual test suites and contributed to the system's Cobol-to-Java migration,
+                  driving company-wide adoption.</li>
+              </ul>
+            </div>
+          </li>
+
+        </ol>
+
+        <!-- Compact editorial sub-block: education / certs / skills -->
+        <div class="subblock reveal">
+          <div class="subblock__col">
+            <span class="subblock__label">Education</span>
+            <p class="subblock__text">
+              MBA / MSIS — University of Utah, David Eccles School of Business (2018–2020).<br />
+              BA, Business Administration — Seattle University (2007–2012).
+            </p>
+          </div>
+          <div class="subblock__col">
+            <span class="subblock__label">Certifications</span>
+            <p class="subblock__text">
+              PMP · PSPO I · PSM I · Certified Redis Developer · Certificate in Java Programming.
+            </p>
+          </div>
+          <div class="subblock__col">
+            <span class="subblock__label">Core skills</span>
+            <p class="subblock__text">
+              Technical Program Management · Stakeholder Management · Cross-functional Team Leadership.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 4 — PORTFOLIO (editorial alternating rows)
+         ASSETS: assets/portfolio-1.png (pong) · assets/portfolio-2.png (runner)
+         Linked games live in games/ ; runner music in media/music/
+         ============================================================ -->
+    <section class="portfolio" id="portfolio">
+      <div class="container">
+        <header class="section-head reveal">
+          <span class="section-num">03</span>
+          <h2 class="section-title">Portfolio</h2>
+          <p class="section-intro">A couple of small things I built with AI — playable in the browser.</p>
+        </header>
+
+        <div class="works">
+
+          <article class="work reveal">
+            <figure class="work__figure">
+              <a class="work__imglink" href="games/pong.html" target="_blank" rel="noopener"
+                aria-label="Play the Simple Pong Game">
+                <img class="work__img" src="assets/portfolio-1.png"
+                  alt="Screenshot of the Simple Pong Game — a neon-green paddle-and-ball pong court on black"
+                  loading="lazy" width="862" height="624" />
+              </a>
+            </figure>
+            <div class="work__meta">
+              <span class="work__num">01</span>
+              <h3 class="work__title">Simple Pong Game</h3>
+              <p class="work__desc">The first time I was ever amazed by AI. I asked Gemini to create a simple
+                browser-based JS pong replica. I was instantly hooked.</p>
+              <a class="work__link" href="games/pong.html" target="_blank" rel="noopener">Play the game <span
+                  aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+
+          <article class="work work--reverse reveal">
+            <figure class="work__figure">
+              <a class="work__imglink" href="games/game.html" target="_blank" rel="noopener"
+                aria-label="Play the Endless Runner Game">
+                <img class="work__img" src="assets/portfolio-2.png"
+                  alt="Screenshot of the Endless Runner Game — a pixel-art character running across a green field under a blue sky"
+                  loading="lazy" width="796" height="398" />
+              </a>
+            </figure>
+            <div class="work__meta">
+              <span class="work__num">02</span>
+              <h3 class="work__title">Endless Runner Game</h3>
+              <p class="work__desc">My first attempt at making something with AI. I made a simple endless runner game
+                with Claude Code and added music created with Google Lyria.</p>
+              <a class="work__link" href="games/game.html" target="_blank" rel="noopener">Play the game <span
+                  aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 5 — CONTACT (closing editorial moment)
+         ============================================================ -->
+    <section class="contact" id="contact">
+      <div class="container">
+        <div class="contact__inner reveal">
+          <span class="section-num">04</span>
+          <h2 class="contact__head">Let's connect.</h2>
+          <p class="contact__text">
+            Open to conversations about technical program leadership, reliability,
+            and building with AI. If that's you, say hello.
+          </p>
+          <!-- PLACEHOLDER: replace [LinkedIn URL] -->
+          <a class="contact__link" href="[LinkedIn URL]">Connect on LinkedIn <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       FOOTER — small and quiet
+       ============================================================ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__name">Stephen Jackson · © 2026</p>
+      <p class="footer__built">Built with Claude.</p>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS — GSAP + ScrollTrigger via CDN, then site logic
+       ============================================================ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+
+</html>

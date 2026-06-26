@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endless Runner</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body {
+            background: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            border: 2px solid #444;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+
+        // Background music
+        const bgMusic = new Audio('../media/music/Pixelated_Pursuit.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5;
+        let musicStarted = false;
+
+        // Constants
+        const GROUND_Y = 340;
+        const GRAVITY = 0.8;
+        const JUMP_FORCE = -14;
+        const DOUBLE_JUMP_FORCE = -12;
+        const BASE_SPEED = 5;
+        const SPEED_INCREMENT = 0.003;
+        const MIN_SPAWN_INTERVAL = 30;
+        const MAX_SPAWN_INTERVAL = 140;
+        const PLAYER_X = 100;
+
+        // Player dimensions
+        const P_WIDTH = 30;
+        const P_HEIGHT = 50;
+
+        // Obstacle dimensions
+        const OBS_WIDTH = 30;
+        const OBS_HEIGHT = 40;
+
+        // Game state
+        let gameState = 'start'; // 'start', 'playing', 'gameover'
+        let score = 0;
+        let gameSpeed = BASE_SPEED;
+        let spawnTimer = 0;
+        let nextSpawnTime = 100;
+        let frameCount = 0;
+
+        // Player
+        const player = {
+            x: PLAYER_X,
+            y: GROUND_Y - P_HEIGHT,
+            width: P_WIDTH,
+            height: P_HEIGHT,
+            vy: 0,
+            jumpCount: 0,
+            grounded: true,
+            animFrame: 0,
+            animTimer: 0
+        };
+
+        // Obstacles
+        let obstacles = [];
+
+        function resetGame() {
+            score = 0;
+            gameSpeed = BASE_SPEED;
+            spawnTimer = 0;
+            nextSpawnTime = 100;
+            frameCount = 0;
+            player.y = GROUND_Y - P_HEIGHT;
+            player.vy = 0;
+            player.jumpCount = 0;
+            player.grounded = true;
+            player.animFrame = 0;
+            obstacles = [];
+        }
+
+        // Input
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (gameState === 'start') {
+                    gameState = 'playing';
+                    resetGame();
+                    if (!musicStarted) {
+                        bgMusic.play();
+                        musicStarted = true;
+                    }
+                } else if (gameState === 'playing') {
+                    if (player.jumpCount < 2) {
+                        player.vy = player.jumpCount === 0 ? JUMP_FORCE : DOUBLE_JUMP_FORCE;
+                        player.jumpCount++;
+                        player.grounded = false;
+                    }
+                } else if (gameState === 'gameover') {
+                    gameState = 'playing';
+                    resetGame();
+                    bgMusic.currentTime = 0;
+                    bgMusic.play();
+                }
+            }
+        });
+
+        function spawnObstacle() {
+            // 50% ground, 50% air
+            const isAir = Math.random() > 0.5;
+            const obs = {
+                x: canvas.width + OBS_WIDTH,
+                width: OBS_WIDTH,
+                height: OBS_HEIGHT,
+                scored: false,
+                isAir: isAir
+            };
+            if (isAir) {
+                // Air obstacle: above player's head when standing
+                obs.y = GROUND_Y - P_HEIGHT - OBS_HEIGHT - 15;
+            } else {
+                // Ground obstacle: sitting on the ground
+                obs.y = GROUND_Y - OBS_HEIGHT;
+            }
+            obstacles.push(obs);
+        }
+
+        function update() {
+            if (gameState !== 'playing') return;
+
+            frameCount++;
+
+            // Increase speed over time
+            gameSpeed = BASE_SPEED + frameCount * SPEED_INCREMENT;
+
+            // Player physics
+            if (!player.grounded) {
+                player.vy += GRAVITY;
+                player.y += player.vy;
+                if (player.y >= GROUND_Y - P_HEIGHT) {
+                    player.y = GROUND_Y - P_HEIGHT;
+                    player.vy = 0;
+                    player.jumpCount = 0;
+                    player.grounded = true;
+                }
+            }
+
+            // Running animation
+            player.animTimer++;
+            if (player.animTimer > 8) {
+                player.animTimer = 0;
+                player.animFrame = (player.animFrame + 1) % 4;
+            }
+
+            // Spawn obstacles
+            spawnTimer++;
+            if (spawnTimer >= nextSpawnTime) {
+                spawnObstacle();
+                // At higher scores, sometimes spawn a second obstacle close behind
+                if (score >= 10 && Math.random() < 0.3) {
+                    const bonus = obstacles[obstacles.length - 1];
+                    spawnObstacle();
+                    // Offset the second obstacle so they're staggered
+                    obstacles[obstacles.length - 1].x += 60 + Math.random() * 40;
+                }
+                // At even higher scores, occasionally spawn a third
+                if (score >= 25 && Math.random() < 0.2) {
+                    spawnObstacle();
+                    obstacles[obstacles.length - 1].x += 130 + Math.random() * 40;
+                }
+                spawnTimer = 0;
+                // Decrease spawn interval as speed increases, but clamp
+                const interval = MAX_SPAWN_INTERVAL - (gameSpeed - BASE_SPEED) * 8;
+                nextSpawnTime = Math.max(MIN_SPAWN_INTERVAL, interval * (0.6 + Math.random() * 0.5));
+            }
+
+            // Update obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.x -= gameSpeed;
+
+                // Score when obstacle passes the player
+                if (!obs.scored && obs.x + obs.width < player.x) {
+                    obs.scored = true;
+                    score++;
+                }
+
+                // Remove off-screen obstacles
+                if (obs.x + obs.width < -10) {
+                    obstacles.splice(i, 1);
+                    continue;
+                }
+
+                // Collision detection (AABB)
+                if (
+                    player.x < obs.x + obs.width &&
+                    player.x + player.width > obs.x &&
+                    player.y < obs.y + obs.height &&
+                    player.y + player.height > obs.y
+                ) {
+                    gameState = 'gameover';
+                    bgMusic.pause();
+                }
+            }
+        }
+
+        function drawPlayer() {
+            const px = player.x;
+            const py = player.y;
+
+            // Head
+            ctx.fillStyle = '#FFCC99';
+            ctx.fillRect(px + 8, py, 14, 14);
+
+            // Eyes
+            ctx.fillStyle = '#000';
+            ctx.fillRect(px + 16, py + 4, 3, 3);
+
+            // Body
+            ctx.fillStyle = '#3366CC';
+            ctx.fillRect(px + 6, py + 14, 18, 18);
+
+            // Arms
+            ctx.fillStyle = '#FFCC99';
+            if (player.grounded) {
+                // Animate arms while running
+                if (player.animFrame < 2) {
+                    ctx.fillRect(px + 1, py + 16, 5, 4);
+                    ctx.fillRect(px + 24, py + 22, 5, 4);
+                } else {
+                    ctx.fillRect(px + 1, py + 22, 5, 4);
+                    ctx.fillRect(px + 24, py + 16, 5, 4);
+                }
+            } else {
+                // Arms up when jumping
+                ctx.fillRect(px + 1, py + 12, 5, 4);
+                ctx.fillRect(px + 24, py + 12, 5, 4);
+            }
+
+            // Legs
+            ctx.fillStyle = '#884422';
+            if (player.grounded) {
+                // Animate legs while running
+                if (player.animFrame === 0) {
+                    ctx.fillRect(px + 8, py + 32, 6, 10);
+                    ctx.fillRect(px + 16, py + 36, 6, 6);
+                } else if (player.animFrame === 1) {
+                    ctx.fillRect(px + 8, py + 32, 6, 14);
+                    ctx.fillRect(px + 16, py + 32, 6, 14);
+                } else if (player.animFrame === 2) {
+                    ctx.fillRect(px + 8, py + 36, 6, 6);
+                    ctx.fillRect(px + 16, py + 32, 6, 10);
+                } else {
+                    ctx.fillRect(px + 8, py + 32, 6, 14);
+                    ctx.fillRect(px + 16, py + 32, 6, 14);
+                }
+            } else {
+                // Legs tucked when jumping
+                ctx.fillRect(px + 8, py + 32, 6, 8);
+                ctx.fillRect(px + 16, py + 32, 6, 8);
+            }
+
+            // Shoes
+            ctx.fillStyle = '#333';
+            if (player.grounded) {
+                if (player.animFrame === 0) {
+                    ctx.fillRect(px + 6, py + 42, 10, 4);
+                    ctx.fillRect(px + 14, py + 42, 10, 4);
+                } else if (player.animFrame === 1) {
+                    ctx.fillRect(px + 6, py + 46, 10, 4);
+                    ctx.fillRect(px + 14, py + 46, 10, 4);
+                } else if (player.animFrame === 2) {
+                    ctx.fillRect(px + 6, py + 42, 10, 4);
+                    ctx.fillRect(px + 14, py + 42, 10, 4);
+                } else {
+                    ctx.fillRect(px + 6, py + 46, 10, 4);
+                    ctx.fillRect(px + 14, py + 46, 10, 4);
+                }
+            } else {
+                ctx.fillRect(px + 6, py + 40, 10, 4);
+                ctx.fillRect(px + 14, py + 40, 10, 4);
+            }
+        }
+
+        function drawObstacle(obs) {
+            if (obs.isAir) {
+                // Air obstacle — red block
+                ctx.fillStyle = '#CC3333';
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                ctx.fillStyle = '#991111';
+                ctx.fillRect(obs.x + 4, obs.y + 4, obs.width - 8, obs.height - 8);
+            } else {
+                // Ground obstacle — brown crate
+                ctx.fillStyle = '#996633';
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                ctx.fillStyle = '#774411';
+                ctx.fillRect(obs.x + 3, obs.y + 3, obs.width - 6, obs.height - 6);
+                // Cross pattern
+                ctx.strokeStyle = '#553300';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(obs.x + 3, obs.y + 3);
+                ctx.lineTo(obs.x + obs.width - 3, obs.y + obs.height - 3);
+                ctx.moveTo(obs.x + obs.width - 3, obs.y + 3);
+                ctx.lineTo(obs.x + 3, obs.y + obs.height - 3);
+                ctx.stroke();
+            }
+        }
+
+        function draw() {
+            // Sky
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ground
+            ctx.fillStyle = '#5B8731';
+            ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+
+            // Ground line
+            ctx.fillStyle = '#4A6F28';
+            ctx.fillRect(0, GROUND_Y, canvas.width, 4);
+
+            if (gameState === 'start') {
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 36px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('Press Space Bar to Start', canvas.width / 2, canvas.height / 2);
+                ctx.font = '18px monospace';
+                ctx.fillText('Press spacebar once to jump or press it a second time to double jump!', canvas.width / 2, canvas.height / 2 + 40);
+                ctx.textAlign = 'left';
+                return;
+            }
+
+            // Draw player
+            drawPlayer();
+
+            // Draw obstacles
+            for (const obs of obstacles) {
+                drawObstacle(obs);
+            }
+
+            // Score
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('Score: ' + score, canvas.width - 20, 35);
+            ctx.textAlign = 'left';
+
+            if (gameState === 'gameover') {
+                // Semi-transparent overlay
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#FF4444';
+                ctx.font = 'bold 48px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 40);
+
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 24px monospace';
+                ctx.fillText('Items Avoided: ' + score, canvas.width / 2, canvas.height / 2 + 10);
+
+                ctx.font = 'bold 20px monospace';
+                ctx.fillText('Try Again? (Press Spacebar!)', canvas.width / 2, canvas.height / 2 + 50);
+                ctx.textAlign = 'left';
+            }
+        }
+
+        // Fixed-timestep loop: run game logic a fixed 60 times/sec regardless of
+        // the monitor's refresh rate, so the game plays at the same speed on any
+        // display. Rendering still happens once per animation frame.
+        const FIXED_DT = 1000 / 60; // ms per logic step (~16.67ms = 60 updates/sec)
+        let lastTime = null;
+        let accumulator = 0;
+
+        function gameLoop(now) {
+            if (lastTime === null) lastTime = now;
+            let frameTime = now - lastTime;
+            lastTime = now;
+
+            // Clamp to avoid a "spiral of death" after the tab is backgrounded
+            if (frameTime > 250) frameTime = 250;
+            accumulator += frameTime;
+
+            while (accumulator >= FIXED_DT) {
+                update();
+                accumulator -= FIXED_DT;
+            }
+
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
