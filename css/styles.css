@@ -315,7 +315,10 @@ a { color: inherit; }
 .scrub__pin {
   position: sticky;
   top: 0;
-  height: 100svh;
+  /* lvh (large viewport height) matches the vh units used for the section's
+     scroll height; svh would leave a thin ink strip on mobile once the address
+     bar hides during scrubbing. overflow:hidden clips any excess when shown. */
+  height: 100lvh;
   overflow: hidden;
   display: flex;
   align-items: center;
