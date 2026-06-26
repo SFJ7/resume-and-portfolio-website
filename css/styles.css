@@ -499,7 +499,7 @@ a { color: inherit; }
   margin: 0;
   border: 1px solid var(--hairline);
   background: var(--paper);
-  padding: clamp(10px, 1.6vw, 18px);
+  overflow: hidden; /* clip the hover zoom to the frame */
 }
 /* Image itself links to the game */
 .work__imglink {
@@ -510,11 +510,10 @@ a { color: inherit; }
   transition: opacity 0.35s var(--ease), transform 0.5s var(--ease);
 }
 .work__imglink:hover .work__img { opacity: 0.88; transform: scale(1.012); }
-/* Game screenshots are shown whole (contain) on a paper mat, like framed prints */
+/* Screenshots fill the frame at their natural aspect ratio — no mat / letterboxing */
 .work__img {
   width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: contain;
+  height: auto;
   display: block;
 }
 .work__num {
@@ -629,7 +628,10 @@ a { color: inherit; }
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  .work--reverse .work__figure { order: 0; }
+  /* On mobile, show the description above the image for all items */
+  .work__meta { order: 1; }
+  .work__figure,
+  .work--reverse .work__figure { order: 2; }
 
   .subblock { grid-template-columns: 1fr; gap: 2rem; }
 
