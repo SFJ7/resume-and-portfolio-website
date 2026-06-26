@@ -8,8 +8,6 @@
   "use strict";
 
   var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-  var isSmall = window.matchMedia("(max-width: 760px)").matches;
 
   /* --------------------------------------------------------
      1. NAV — transparent over hero, solid after scroll
@@ -147,8 +145,9 @@
   function initScrub() {
     var gsapReady = window.gsap && window.ScrollTrigger;
 
-    /* Graceful degradation paths */
-    if (prefersReduced || isTouch || isSmall || !gsapReady) {
+    /* Graceful degradation paths — only when motion is disabled or GSAP
+       failed to load. Touch / small screens now scroll-scrub like desktop. */
+    if (prefersReduced || !gsapReady) {
       enableScrubFallback();
       return;
     }
@@ -240,6 +239,20 @@
     });
 
     ScrollTrigger.refresh();
+
+    /* iOS Safari only paints frames from `currentTime` seeks after the video
+       has played at least once. Prime it (play→pause) on the first user
+       gesture so mobile scrubbing actually renders. Runs once, stays silent. */
+    function primeVideo() {
+      var p = scrubVideo.play();
+      if (p && typeof p.then === "function") {
+        p.then(function () { scrubVideo.pause(); }).catch(function () {});
+      } else {
+        scrubVideo.pause();
+      }
+    }
+    window.addEventListener("touchstart", primeVideo, { passive: true, once: true });
+    window.addEventListener("pointerdown", primeVideo, { passive: true, once: true });
   }
 
   /* GSAP loads with defer; init on window load to ensure it's parsed */
